@@ -2,16 +2,49 @@
 
 Modern desktop chat interface for Ollama with advanced AI features.
 
+## Project Status
+
+**Early Beta** - Developed with Claude Code, directed by [Bierdieb](https://github.com/Bierdieb)
+
+This project is functional and well-suited for real-world use, though not entirely bug-free. Primary testing has been conducted with **gpt-oss:20b** and the recommended embedding models listed below.
+
+**Key Strengths:**
+- 📚 **Large-scale RAG:** Index and query massive amounts of text and code
+- 🔍 **Intelligent Context:** AI-assisted utilization of extensive codebases and documentation
+- 🛠️ **Code Generation:** Create and modify files through tool-based interactions
+- 📄 **PDF Support:** Document indexing without image recognition (experimental)
+
+**Use Cases:**
+- Software development with large codebases
+- Technical documentation analysis
+- Research paper review and synthesis
+- Multi-file code refactoring assistance
+
 ## Features
 
+### Core Functionality
 - **Advanced Markdown Rendering:** Syntax highlighting, think-block support, code copy buttons
-- **RAG Integration:** Vector database (LanceDB) for document retrieval and context augmentation
-- **WebSearch:** Built-in web search capabilities (Ollama API / Searx)
-- **System Tools:** Execute bash commands, read/write files with permission management
-- **Chat History:** Save, load, and manage multiple conversations
-- **Pinned Messages:** Keep important context in memory (max 5 pins)
+- **System Tools:** Execute bash commands, read/write files with granular permission management
+- **Chat History:** Save, load, and manage multiple conversations with timestamps
 - **Token Analytics:** Real-time token usage tracking and context monitoring
-- **Model Support:** Works with Ollama models including llama3.2, qwen2.5-coder, mistral-small3
+
+### RAG (Retrieval-Augmented Generation)
+- **Dual Embedding Models:** Separate optimized models for text and code
+- **Code-Aware Chunking:** Smart chunking that respects code structure and syntax
+- **Reranker Integration:** Advanced relevance scoring with BGE-reranker-v2-m3
+- **Snapshot System:** Save, load, and append RAG databases for different projects
+- **Multi-File Batch Indexing:** Efficient indexing of large document sets
+- **PDF Support:** Document indexing without image recognition (experimental)
+
+### Context Management
+- **Pinned Messages:** Keep up to 5 important messages in active context
+- **Pin Archiving:** Archive context pins to RAG for permanent storage
+- **Dynamic Context Window:** Automatic context size adjustment per model
+
+### AI Integration
+- **WebSearch:** Built-in web search capabilities (Ollama API / Searx)
+- **Think-Block Rendering:** Visualize model reasoning process (gpt-oss, qwen3)
+- **Custom Modelfiles:** Optimized model templates with enhanced tool calling
 
 ## Tech Stack
 
@@ -278,8 +311,9 @@ Ollmini-Devbox-rc0.2.0b/
 │   └── package-lock.json # Dependency lock
 ├── Models/
 │   └── gpt-oss_20b_Modelfile.txt  # Example model template
+├── CHANGELOG.md          # Detailed change history
 ├── CLAUDE.md             # AI assistant guidance
-├── TOOL_EXECUTION_BUG_ANALYSIS.md  # Known issues analysis
+├── LICENSE               # GPL v3 License
 └── README.md             # This file
 ```
 
@@ -317,12 +351,25 @@ Modular CSS split into 8 ordered files:
 
 ## License
 
-See project root for license information.
+This project is licensed under the **GNU General Public License v3.0**.
+
+See [LICENSE](LICENSE) file for full text.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or open issues on GitHub.
+
+**Repository:** [github.com/Bierdieb/ollmini_devbox](https://github.com/Bierdieb/ollmini_devbox)
 
 ---
 
 ## Support
 
-For issues and bug reports, refer to `TOOL_EXECUTION_BUG_ANALYSIS.md` for known issues.
+**Issues and Bug Reports:**
+- GitHub Issues: [github.com/Bierdieb/ollmini_devbox/issues](https://github.com/Bierdieb/ollmini_devbox/issues)
 
-For technical details, see `CLAUDE.md`.
+**Development Documentation:**
+- See [CLAUDE.md](CLAUDE.md) for technical implementation details
+- See [CHANGELOG.md](CHANGELOG.md) for detailed change history
