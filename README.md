@@ -35,16 +35,36 @@ Modern desktop chat interface for Ollama with advanced AI features.
 
 3. **At least one Ollama model:** Download before first use
    ```bash
-   ollama pull llama3.2
+   ollama pull gpt-oss:20b
    # OR
-   ollama pull qwen2.5-coder
+   ollama pull qwen3:14b
    ```
 
-### Recommended Models for Full Functionality
-- ✅ **llama3.2** - Full tool calling support
-- ✅ **qwen2.5-coder** - Full tool calling support
-- ✅ **mistral-small3** - Full tool calling support
-- ⚠️ **gpt-oss** - Limited support (see Known Issues)
+### Recommended Chat Models
+- ✅ **gpt-oss:20b** - Primary recommendation (use custom modelfiles from `Models/` directory)
+- ✅ **qwen3:14b** - Full functionality with think-block support
+
+### Recommended Embedding Models (for RAG)
+
+**Text Embedding (1024D):**
+```bash
+ollama pull snowflake-arctic-embed2:568m
+```
+
+**Code Embedding (1024D):**
+```bash
+ollama pull qwen3-embedding:0.6b
+```
+
+**Reranker (improves search relevance):**
+```bash
+ollama pull xitao/bge-reranker-v2-m3
+```
+
+**Default RAG Configuration:**
+- Text Embedding: `snowflake-arctic-embed2:568m`
+- Code Embedding: `qwen3-embedding:0.6b`
+- Reranker: `xitao/bge-reranker-v2-m3`
 
 ---
 
@@ -90,7 +110,7 @@ npm run dev
 ### 1. Configure Ollama Endpoint
 - Click **Settings** (gear icon in header)
 - Navigate to **Ollama Settings** tab
-- Default endpoint: `http://192.168.122.1:11434`
+- Default endpoint: `http://localhost:11434`
 - Update if your Ollama runs on a different host/port
 
 ### 2. Select a Model
@@ -100,7 +120,9 @@ npm run dev
 
 ### 3. Configure RAG (Optional)
 - Go to **Settings → RAG Settings**
-- Select embedding model (e.g., `nomic-embed-text:v1.5`)
+- Text Embedding: `snowflake-arctic-embed2:568m` (default)
+- Code Embedding: `qwen3-embedding:0.6b` (default)
+- Reranker: `xitao/bge-reranker-v2-m3` (improves relevance)
 - Configure chunk size (default: 512)
 - Configure chunk overlap (default: 50)
 
@@ -147,22 +169,34 @@ npm run dev
 
 ---
 
-## Known Issues
+## Custom Model Setup
 
-### ⚠️ Critical: gpt-oss Model Limitations
+### 📦 Using Custom Modelfiles
 
-**Tool Execution Does Not Work:**
-- gpt-oss models output tool parameters as JSON text instead of making actual tool calls
-- Example: `{"command":"pwd"}` appears as text instead of executing
-- **Root Cause:** gpt-oss models were NOT trained for Ollama's tool calling API
-- **Solution:** Use llama3.2, qwen2.5-coder, or mistral-small3 instead
+Ollmini Devbox includes optimized **custom modelfiles** in the `Models/` directory for enhanced functionality:
 
-**Pinned Context Not Delivered:**
-- Pinned messages are added to requests but gpt-oss template ignores them
-- Template has hardcoded system message, doesn't process dynamic system messages
-- **Solution:** Switch to models with proper system message handling
+**Available Custom Models:**
+- `gpt-oss:20b_ollmini` - Optimized GPT-OSS with tool calling support
+- `qwen3:14b_ollmini` - Optimized Qwen3 with think-block support
 
-**For full technical analysis, see:** `TOOL_EXECUTION_BUG_ANALYSIS.md`
+**Installation Methods:**
+
+**Option 1: Auto-Setup (Localhost Ollama)**
+1. Open **Settings → Ollama Settings**
+2. Scroll to "Custom Model Setup" section
+3. Select desired models from the list
+4. Click "Apply Selected Models"
+5. Wait for installation to complete
+
+**Option 2: Manual Setup (Docker/Remote)**
+```bash
+# Example: Install gpt-oss custom model
+ollama create gpt-oss:20b_ollmini < Models/gpt-oss_20b_Modelfile.txt
+```
+
+**For detailed setup instructions, see:** `Initial_Model_Setup.md`
+
+**Note:** Custom modelfiles provide enhanced functionality including proper tool calling, think-block support, and optimized system prompts.
 
 ---
 
@@ -181,11 +215,12 @@ All settings stored in browser localStorage:
 - `showThinkingBlocks`: Display think-blocks (default: true)
 
 **Ollama Settings:**
-- `ollamaEndpoint`: API endpoint (default: `http://192.168.122.1:11434`)
+- `ollamaEndpoint`: API endpoint (default: `http://localhost:11434`)
 
 **RAG Settings:**
-- Embedding Model: e.g., `nomic-embed-text:v1.5`
-- Reranker Model: Optional, e.g., `xitao/bge-reranker-v2-m3`
+- Text Embedding: `snowflake-arctic-embed2:568m` (default)
+- Code Embedding: `qwen3-embedding:0.6b` (default)
+- Reranker Model: `xitao/bge-reranker-v2-m3` (default, improves search relevance)
 - Chunk Size: 256-2048 (default: 512)
 - Chunk Overlap: 0-200 (default: 50)
 - Semantic Chunking: Enabled/Disabled
