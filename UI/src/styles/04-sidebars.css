@@ -1,0 +1,563 @@
+/**
+ * 04-sidebars.css
+ *
+ * PURPOSE: Left sidebar (chat history) and Right sidebar (pinned messages)
+ * DEPENDENCIES: 01-base.css, 02-layout.css
+ * AFFECTS: .left-sidebar, .pinned-sidebar, .input-container, .main-content, .header
+ * LOAD ORDER: #4 - Adds sidebar-specific offsets to layout elements
+ *
+ * KEY COMPONENTS:
+ * - .left-sidebar: Chat history list (left, width: 250px)
+ * - .pinned-sidebar: Pinned messages (right, width: 300px)
+ * - .pinned-sidebar-visible: Dynamic class added to .main-content and .input-container
+ * - Sidebar toggle buttons
+ *
+ * KNOWN ISSUES:
+ * - .input-container defined here AND in 05-chat.css (lines 378-390)
+ * - Changing .input-container margins can affect sidebar toggle positioning
+ * - See CSS-ARCHITECTURE.md section "Known Issues: .input-container Complexity"
+ *
+ * See: CSS-ARCHITECTURE.md for full documentation
+ */
+
+/* Left Sidebar */
+.left-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.left-sidebar.closed {
+    transform: translateX(-100%);
+}
+
+.left-sidebar.closed .sidebar-content {
+    opacity: 0;
+}
+
+.left-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.left-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    position: fixed;
+    left: 250px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 48px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 999;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-toggle:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.sidebar-toggle svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+}
+
+.left-sidebar.closed ~ .sidebar-toggle {
+    left: 0;
+}
+
+.left-sidebar.closed ~ .sidebar-toggle svg {
+    transform: rotate(180deg);
+}
+
+/* New Chat Button */
+.new-chat-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    margin: 16px;
+    background: linear-gradient(135deg, #5a6a7a 0%, #4a5a6a 100%);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.new-chat-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    padding: 1px;
+    background: linear-gradient(135deg, transparent, rgba(97, 175, 239, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.new-chat-btn:hover {
+    background: linear-gradient(135deg, #6a7a8a 0%, #5a6a7a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 122, 204, 0.4);
+}
+
+.new-chat-btn:hover::after {
+    opacity: 1;
+}
+
+.new-chat-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.new-chat-icon {
+    flex-shrink: 0;
+}
+
+.new-chat-btn span {
+    font-weight: 600;
+}
+
+/* Clear All Chats Button */
+.clear-all-chats-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 8px 16px;
+    background: rgba(224, 108, 117, 0.1);
+    border: 1px solid rgba(224, 108, 117, 0.3);
+    border-radius: 8px;
+    color: #e06c75;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-all-chats-btn:hover {
+    background: rgba(224, 108, 117, 0.2);
+    border-color: #e06c75;
+    transform: scale(1.05);
+}
+
+.clear-all-chats-btn:active {
+    transform: scale(0.95);
+}
+
+.clear-all-chats-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Clear All Button - Confirm Pending State */
+.clear-all-chats-btn.confirm-pending {
+    background: #e06c75;
+    color: white;
+    border-color: #e06c75;
+    animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(224, 108, 117, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(224, 108, 117, 0);
+    }
+}
+
+/* Chat History List */
+.chat-history-list {
+    flex: 1;
+    overflow-y: scroll; /* Changed from auto to scroll for permanent visibility */
+    padding: 0 8px 8px 8px;
+
+    /* Firefox Scrollbar Support */
+    scrollbar-width: thin;
+    scrollbar-color: #4a5a6a var(--bg-secondary);
+}
+
+/* Webkit Scrollbar (Chrome, Edge, Safari) */
+.chat-history-list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.chat-history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+}
+
+.chat-history-list::-webkit-scrollbar-thumb {
+    background: #4a5a6a;
+    border-radius: 6px;
+    border: 2px solid var(--bg-secondary);
+}
+
+.chat-history-list::-webkit-scrollbar-thumb:hover {
+    background: #61afef;
+}
+
+.chat-history-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    border: 1px solid transparent;
+    position: relative;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.chat-history-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.chat-history-item.active {
+    background-color: rgba(97, 175, 239, 0.15);
+    border-color: #61afef;
+    color: var(--text-primary);
+}
+
+.chat-history-item.favorite {
+    border-left: 3px solid #e5c07b;
+}
+
+.favorite-star-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #e5c07b;
+}
+
+.chat-history-item .chat-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* Chat History Action Buttons */
+.chat-history-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.chat-history-item:hover .chat-history-actions {
+    opacity: 1;
+}
+
+.chat-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--text-secondary);
+}
+
+.chat-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.chat-action-btn.delete:hover {
+    background: rgba(224, 108, 117, 0.2);
+    border-color: #e06c75;
+    color: #e06c75;
+}
+
+.chat-action-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Chat Context Menu */
+.chat-context-menu {
+    position: fixed;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    padding: 6px;
+    z-index: 10001;
+    min-width: 180px;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+}
+
+.chat-context-menu.show {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1);
+}
+
+.chat-context-menu .context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chat-context-menu .context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.chat-context-menu .context-menu-item svg {
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+/* Adjust main content for sidebar */
+.header {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+.left-sidebar.closed ~ .header {
+    margin-left: 0;
+}
+
+.main-content {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+.left-sidebar.closed ~ .main-content {
+    margin-left: 0;
+}
+
+/* .input-container - Sidebar margin adjustments
+ * WARNING: ALSO DEFINED IN 05-chat.css (base styles) and 08-responsive.css (breakpoints)
+ * Purpose: Offset input area for left/right sidebars
+ * Caution: Changing margins here can affect:
+ *   - Sidebar toggle button positioning
+ *   - Responsive layouts at breakpoints
+ *   - Input area alignment with chat messages
+ * Always test with BOTH sidebars open AND closed
+ */
+.input-container {
+    margin-left: 250px;
+    margin-right: 0;
+    transition: margin-left 0.3s ease, margin-right 0.3s ease;
+}
+
+.left-sidebar.closed ~ .input-container {
+    margin-left: 0;
+}
+
+.input-container.pinned-sidebar-visible {
+    margin-right: 300px !important;
+}
+
+/* Pinned Messages Sidebar (Right) */
+.pinned-sidebar {
+    position: fixed;
+    right: 0;
+    top: 60px; /* Below header */
+    width: 300px;
+    height: calc(100vh - 60px);
+    background-color: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    display: flex; /* Always display: flex for proper layout */
+    flex-direction: column;
+    z-index: 900; /* Below left-sidebar (1000) */
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Collapsed state - slide out to the right */
+.pinned-sidebar.collapsed {
+    transform: translateX(100%);
+}
+
+/* Pinned Sidebar Toggle Button (Right side) */
+.pinned-sidebar-toggle {
+    position: fixed;
+    right: 300px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 48px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 999;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pinned-sidebar-toggle:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.pinned-sidebar-toggle svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+}
+
+/* When sidebar is collapsed, move toggle to screen edge */
+.pinned-sidebar-toggle.collapsed {
+    right: 0;
+}
+
+/* Rotate icon when sidebar is collapsed */
+.pinned-sidebar-toggle.collapsed svg {
+    transform: rotate(180deg);
+}
+
+/* Adjust main-content when pinned-sidebar is visible */
+.main-content.pinned-sidebar-visible {
+    margin-right: 300px;
+}
+
+/* Scrollbar styling for pinned-sidebar */
+.pinned-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pinned-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pinned-sidebar::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+}
+
+.pinned-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+/* Pinned sidebar header */
+.pinned-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    flex-shrink: 0;
+}
+
+.pinned-header h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.pinned-stats {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.pinned-tokens {
+    color: var(--text-secondary);
+}
+
+/* Pinned sidebar content area */
+.pinned-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.pinned-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+.pinned-placeholder p {
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.pinned-hint {
+    font-size: 11px;
+    opacity: 0.7;
+}
+

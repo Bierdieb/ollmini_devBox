@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self';">
+    <title>Dashboard - RAG & Context Monitor</title>
+    <link rel="stylesheet" href="dashboard-styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>RAG & Context Dashboard</h1>
+            <div class="header-actions">
+                <button id="exportCsv" class="header-btn">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M2 2h12v2H2V2zm0 4h12v2H2V6zm0 4h7v2H2v-2z"/>
+                    </svg>
+                    Export CSV
+                </button>
+                <button id="exportJson" class="header-btn">
+                    <svg width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M14 2H2v12h12V2zM7 12H4V6h3v6zm6 0H9V4h4v8z"/>
+                    </svg>
+                    Export JSON
+                </button>
+                <div class="zoom-controls">
+                    <button id="zoomOutBtn" class="zoom-btn" title="Zoom Out (Ctrl+-)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="7" cy="7" r="5"/>
+                            <path d="M5 7h4"/>
+                            <path d="M11 11l3 3"/>
+                        </svg>
+                    </button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button id="zoomInBtn" class="zoom-btn" title="Zoom In (Ctrl++)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="7" cy="7" r="5"/>
+                            <path d="M7 5v4M5 7h4"/>
+                            <path d="M11 11l3 3"/>
+                        </svg>
+                    </button>
+                    <button id="zoomResetBtn" class="zoom-btn zoom-reset" title="Reset Zoom (Ctrl+0)">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M2 8a6 6 0 0110.243-4.243M14 8A6 6 0 013.757 12.243"/>
+                            <path d="M12 4l.707-.707M12 4l.707.707M12 4h-2M4 12l-.707.707M4 12l-.707-.707M4 12h2"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="dashboard-main">
+            <!-- Context Monitor Section -->
+            <section class="dashboard-card context-monitor">
+                <h2 class="card-title">Context Monitor</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Input Tokens</div>
+                        <div class="stat-value" id="inputTokens">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Output Tokens</div>
+                        <div class="stat-value" id="outputTokens">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Tokens</div>
+                        <div class="stat-value" id="totalTokens">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Context Limit</div>
+                        <div class="stat-value" id="contextLimit">0</div>
+                    </div>
+                </div>
+                <div class="context-progress">
+                    <div class="context-label">
+                        <span id="contextPercentage">0%</span>
+                        <span id="contextUsage">0 / 0</span>
+                    </div>
+                    <div class="context-bar">
+                        <div class="context-fill" id="contextFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Token Timeline Chart -->
+            <section class="dashboard-card chart-container">
+                <h2 class="card-title">Token Timeline</h2>
+                <canvas id="tokenChart"></canvas>
+            </section>
+
+            <!-- RAG Analytics Section -->
+            <section class="dashboard-card rag-analytics">
+                <h2 class="card-title">RAG Analytics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Indexed Chunks</div>
+                        <div class="stat-value" id="indexedChunks">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Queries</div>
+                        <div class="stat-value" id="totalQueries">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Query Time</div>
+                        <div class="stat-value" id="avgQueryTime">0ms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Relevance</div>
+                        <div class="stat-value" id="avgRelevance">0.00</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Query Performance Chart -->
+            <section class="dashboard-card chart-container">
+                <h2 class="card-title">Query Performance</h2>
+                <canvas id="queryChart"></canvas>
+            </section>
+
+            <!-- Query History Table -->
+            <section class="dashboard-card query-history">
+                <h2 class="card-title">Query History (Last 20)</h2>
+                <div class="table-container">
+                    <table id="queryTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Query</th>
+                                <th>Results</th>
+                                <th>Avg Score</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="queryTableBody">
+                            <tr class="empty-row">
+                                <td colspan="5">No queries yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Indexed Files List -->
+            <section class="dashboard-card indexed-files">
+                <h2 class="card-title">Indexed Files</h2>
+                <div class="files-container" id="filesContainer">
+                    <div class="empty-state">No files indexed yet</div>
+                </div>
+            </section>
+
+            <!-- Score Distribution Chart -->
+            <section class="dashboard-card chart-container">
+                <h2 class="card-title">Relevance Score Distribution</h2>
+                <canvas id="scoreChart"></canvas>
+            </section>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

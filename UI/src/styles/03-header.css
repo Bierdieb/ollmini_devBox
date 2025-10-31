@@ -1,0 +1,255 @@
+/**
+ * 03-header.css
+ *
+ * PURPOSE: Top header bar with model selector, context indicators, token counter
+ * DEPENDENCIES: 01-base.css (CSS variables), 02-layout.css (structure)
+ * AFFECTS: .header, .context-bar-container, .token-counter-left, model selectors
+ * LOAD ORDER: #3 - Extends layout structure
+ *
+ * KEY COMPONENTS:
+ * - .header: Top navigation bar
+ * - .context-indicator: Displays pinned message count
+ * - .token-counter-left: Token usage display
+ * - Model dropdown styles
+ *
+ * KNOWN ISSUES:
+ * - .header margins modified by 04-sidebars.css for sidebar offsets
+ *
+ * See: CSS-ARCHITECTURE.md for full documentation
+ */
+
+/* Header Styles */
+.header {
+    background-color: var(--bg-secondary);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.title-status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.app-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-secondary);
+    transition: background-color 0.3s;
+}
+
+.status-dot.connected {
+    background-color: var(--success-color);
+}
+
+.status-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.activity-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+    padding-left: 16px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.activity-text {
+    font-size: 13px;
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.context-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-left: 20px;
+}
+
+.context-bar-container {
+    width: 200px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.context-bar-fill {
+    height: 100%;
+    background: #4caf50;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    width: 0%;
+}
+
+.context-text {
+    font-size: 12px;
+    color: #b0b0b0;
+    white-space: nowrap;
+}
+
+.context-bar-fill.warning {
+    background: #ff9800;
+}
+
+.context-bar-fill.critical {
+    background: #f44336;
+}
+
+/* RAG Indicator (similar to Context Indicator) */
+.rag-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+.rag-bar-container {
+    width: 200px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rag-bar-fill {
+    height: 100%;
+    background: #4a4a4a;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    width: 0%;
+}
+
+.rag-bar-fill.success {
+    background: #98c379; /* Green - Results found */
+}
+
+.rag-bar-fill.warning {
+    background: #e5c07b; /* Yellow - No results */
+}
+
+.rag-bar-fill.error {
+    background: #e06c75; /* Red - Error */
+}
+
+.rag-text {
+    font-size: 12px;
+    color: #b0b0b0;
+    white-space: nowrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.model-select {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.2s;
+}
+
+.model-select:hover {
+    background-color: var(--bg-input);
+}
+
+.model-select:focus {
+    border-color: var(--accent-color);
+}
+
+.icon-button {
+    background-color: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-button:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.icon-button:active {
+    transform: scale(0.95);
+}
+
+/* Pin Indicator in Header */
+.pin-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.pin-indicator:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-color);
+}
+
+.pin-indicator:active {
+    transform: scale(0.95);
+}
+
+.pin-indicator .pin-icon {
+    font-size: 14px;
+}
+
+.pin-indicator .pin-count-text {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.pin-indicator .pin-tokens-text {
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+/* Dimmed appearance when no pins */
+.pin-indicator.empty {
+    opacity: 0.5;
+}

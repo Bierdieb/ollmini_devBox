@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+UI/node_modules/
+package-lock.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Local permissions
+.gpt-oss/
+**/.gpt-oss/
+**/.*/permissions.json
+
+# RAG Database
+UI/src/rag_db/
+*.lance
+**/.rag_metadata/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+out/

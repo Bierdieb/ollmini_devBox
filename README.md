@@ -1,0 +1,293 @@
+# Ollmini Devbox V0.2.0b
+
+Modern desktop chat interface for Ollama with advanced AI features.
+
+## Features
+
+- **Advanced Markdown Rendering:** Syntax highlighting, think-block support, code copy buttons
+- **RAG Integration:** Vector database (LanceDB) for document retrieval and context augmentation
+- **WebSearch:** Built-in web search capabilities (Ollama API / Searx)
+- **System Tools:** Execute bash commands, read/write files with permission management
+- **Chat History:** Save, load, and manage multiple conversations
+- **Pinned Messages:** Keep important context in memory (max 5 pins)
+- **Token Analytics:** Real-time token usage tracking and context monitoring
+- **Model Support:** Works with Ollama models including llama3.2, qwen2.5-coder, mistral-small3
+
+## Tech Stack
+
+- **Electron:** Desktop application framework
+- **marked.js:** Markdown parsing
+- **highlight.js:** Syntax highlighting
+- **LanceDB:** Vector database for RAG
+- **Ollama API:** LLM inference
+
+---
+
+## System Requirements
+
+### Prerequisites
+1. **Ollama:** Must be installed and running
+   - Install from: https://ollama.ai/
+   - Start service: `ollama serve`
+
+2. **Node.js:** Version 16+ with npm
+   - Install from: https://nodejs.org/
+
+3. **At least one Ollama model:** Download before first use
+   ```bash
+   ollama pull llama3.2
+   # OR
+   ollama pull qwen2.5-coder
+   ```
+
+### Recommended Models for Full Functionality
+- ✅ **llama3.2** - Full tool calling support
+- ✅ **qwen2.5-coder** - Full tool calling support
+- ✅ **mistral-small3** - Full tool calling support
+- ⚠️ **gpt-oss** - Limited support (see Known Issues)
+
+---
+
+## Installation
+
+### 1. Navigate to UI Directory
+```bash
+cd UI
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Link CLI Command (Optional)
+```bash
+npm link
+```
+
+This creates the global `ollmini-devbox` command.
+
+---
+
+## Running the Application
+
+### Production Mode
+```bash
+ollmini-devbox
+```
+*Requires `npm link` to be run first*
+
+### Development Mode (with DevTools)
+```bash
+cd UI
+npm run dev
+```
+
+---
+
+## First-Time Setup
+
+### 1. Configure Ollama Endpoint
+- Click **Settings** (gear icon in header)
+- Navigate to **Ollama Settings** tab
+- Default endpoint: `http://192.168.122.1:11434`
+- Update if your Ollama runs on a different host/port
+
+### 2. Select a Model
+- Models dropdown in header shows all available Ollama models
+- Select your preferred model
+- Model must support tool calling for full functionality
+
+### 3. Configure RAG (Optional)
+- Go to **Settings → RAG Settings**
+- Select embedding model (e.g., `nomic-embed-text:v1.5`)
+- Configure chunk size (default: 512)
+- Configure chunk overlap (default: 50)
+
+### 4. Enable Code Mode (Default: ON)
+- **Code Mode** button in header enables system tools
+- Required for bash commands, file operations
+- Permission dialogs will appear on first use
+
+---
+
+## Usage
+
+### Basic Chat
+1. Type your message in the input box
+2. Press Enter or click Send
+3. Model response appears in chat area
+
+### System Tools
+- **Code Mode must be enabled** (button in header)
+- Tools require permission on first use:
+  - **Allow Once:** Use tool this time only
+  - **Always Allow:** Save permission for this project/model
+  - **Deny:** Block tool execution
+
+### RAG (Document Indexing)
+1. Click **File Browser** icon in header
+2. Navigate to desired directory
+3. Click **Index for RAG**
+4. Select files to index
+5. Files are chunked and embedded into vector database
+6. Relevant chunks are automatically retrieved for context
+
+### Pinned Messages
+- Click **Pin** button on any message bubble
+- Pinned messages stay in context (max 5)
+- View pins in **Pin Sidebar** (right side)
+- Unpin or archive to RAG when needed
+
+### Chat History
+- **Save:** Name and save current conversation
+- **Load:** Restore previous conversation
+- **Delete:** Remove saved conversation
+- History stored in localStorage
+
+---
+
+## Known Issues
+
+### ⚠️ Critical: gpt-oss Model Limitations
+
+**Tool Execution Does Not Work:**
+- gpt-oss models output tool parameters as JSON text instead of making actual tool calls
+- Example: `{"command":"pwd"}` appears as text instead of executing
+- **Root Cause:** gpt-oss models were NOT trained for Ollama's tool calling API
+- **Solution:** Use llama3.2, qwen2.5-coder, or mistral-small3 instead
+
+**Pinned Context Not Delivered:**
+- Pinned messages are added to requests but gpt-oss template ignores them
+- Template has hardcoded system message, doesn't process dynamic system messages
+- **Solution:** Switch to models with proper system message handling
+
+**For full technical analysis, see:** `TOOL_EXECUTION_BUG_ANALYSIS.md`
+
+---
+
+## Configuration
+
+### Settings Location
+All settings stored in browser localStorage:
+- Key: `ollmini-devbox-settings`
+- Persists between sessions
+
+### Key Settings
+
+**Model Settings:**
+- `num_ctx`: Context window size (default: 30000)
+- `thinkingLevel`: low/medium/high (for gpt-oss/qwen models)
+- `showThinkingBlocks`: Display think-blocks (default: true)
+
+**Ollama Settings:**
+- `ollamaEndpoint`: API endpoint (default: `http://192.168.122.1:11434`)
+
+**RAG Settings:**
+- Embedding Model: e.g., `nomic-embed-text:v1.5`
+- Reranker Model: Optional, e.g., `xitao/bge-reranker-v2-m3`
+- Chunk Size: 256-2048 (default: 512)
+- Chunk Overlap: 0-200 (default: 50)
+- Semantic Chunking: Enabled/Disabled
+- Retrieve Top K: 5-50 (default: 20)
+- Rerank Top N: 1-10 (default: 3)
+
+**WebSearch Settings:**
+- Provider: 'ollama' or 'searx'
+- API Key: Required for Ollama provider
+- Searx URL: Required for self-hosted Searx
+
+---
+
+## Troubleshooting
+
+**Model Not Found:**
+- Check `Settings → Ollama Settings → Endpoint` is correct
+- Verify Ollama is running: `ollama list`
+- Ensure model is downloaded: `ollama pull <model>`
+
+**Tools Not Working:**
+- Ensure **Code Mode** button is active (enabled by default)
+- Check permission dialogs aren't blocked
+- Verify `.{modelname}/permissions.json` exists in working directory
+
+**RAG Slow:**
+- Check `FILE_BATCH_SIZE` in `rag-manager.js` (default: 20)
+- Reduce chunk size in RAG settings
+- Use faster embedding model
+
+**Chat History Not Loading:**
+- Check browser localStorage isn't full
+- Key should be `ollmini-chat-history`
+- Clear old chats to free space
+
+**WebSearch Failing:**
+- Verify API key (Ollama provider)
+- Verify Searx URL (self-hosted)
+- Check network connectivity
+
+**App Won't Start:**
+- Ensure Node.js 16+ installed: `node --version`
+- Clear node_modules and reinstall: `rm -rf node_modules && npm install`
+- Check for port conflicts (Electron uses random ports)
+
+---
+
+## File Structure
+
+```
+Ollmini-Devbox-rc0.2.0b/
+├── UI/
+│   ├── src/              # Source files (36 modules)
+│   ├── package.json      # Dependencies
+│   └── package-lock.json # Dependency lock
+├── Models/
+│   └── gpt-oss_20b_Modelfile.txt  # Example model template
+├── CLAUDE.md             # AI assistant guidance
+├── TOOL_EXECUTION_BUG_ANALYSIS.md  # Known issues analysis
+└── README.md             # This file
+```
+
+---
+
+## Development
+
+### Module Architecture
+- **renderer.js:** Entry point, orchestrator
+- **ollama-client.js:** API communication, streaming
+- **message-renderer.js:** Message rendering, think-blocks
+- **settings-manager.js:** Settings management
+- **rag-manager.js:** Vector database integration
+- **file-browser.js:** Directory browser, RAG snapshots
+- **chat-history-manager.js:** Chat persistence
+- **permission-manager.js:** Tool permission system
+- **system-tool-executor.js:** Tool execution engine
+
+**Pattern:** DOM Reference Injection + Settings Injection for clean separation
+
+### CSS Structure
+Modular CSS split into 8 ordered files:
+1. `01-base.css` - Variables, resets
+2. `02-layout.css` - Grid layout
+3. `03-header.css` - Header styling
+4. `04-sidebars.css` - Sidebar panels
+5. `05-chat.css` - Chat messages
+6. `06-markdown.css` - Markdown rendering
+7. `07-modals.css` - Modal dialogs
+8. `08-responsive.css` - Responsive design
+
+**Load order is critical for proper CSS specificity**
+
+---
+
+## License
+
+See project root for license information.
+
+---
+
+## Support
+
+For issues and bug reports, refer to `TOOL_EXECUTION_BUG_ANALYSIS.md` for known issues.
+
+For technical details, see `CLAUDE.md`.

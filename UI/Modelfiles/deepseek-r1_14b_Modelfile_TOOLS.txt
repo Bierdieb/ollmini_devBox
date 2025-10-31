@@ -1,0 +1,56 @@
+# DeepSeek-R1:14b with Tool/Function Calling Support
+# Based on official HuggingFace chat template
+
+FROM /home/atlas/.ollama/models/blobs/sha256-6e9f90f02bb3b39b59e81916e8cfce9deb45aeaeb9a54a5be4414486b907dc1e
+
+TEMPLATE """{{- if .System }}{{ .System }}{{ end }}
+{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1}}
+{{- if eq .Role "user" }}<｜User｜>{{ .Content }}
+{{- else if eq .Role "assistant" }}
+  {{- if .ToolCalls }}
+    {{- if .Content }}<｜Assistant｜>{{ .Content }}{{ end }}
+    <｜tool▁calls▁begin｜>
+    {{- range .ToolCalls }}
+      <｜tool▁call▁begin｜>function<｜tool▁sep｜>{{ .Function.Name }}
+```json
+{{ .Function.Arguments }}
+```
+<｜tool▁call▁end｜>
+    {{- end }}
+    <｜tool▁calls▁end｜><｜end▁of▁sentence｜>
+  {{- else }}
+    <｜Assistant｜>
+    {{- if and $.IsThinkSet (and $last .Thinking) -}}
+<think>
+{{ .Thinking }}
+</think>
+    {{- end }}{{ .Content }}{{- if not $last }}<｜end▁of▁sentence｜>{{- end }}
+  {{- end }}
+{{- else if eq .Role "tool" }}
+  {{- if eq $i 0 }}
+<｜tool▁outputs▁begin｜><｜tool▁output▁begin｜>{{ .Content }}<｜tool▁output▁end｜>
+  {{- else }}
+<｜tool▁output▁begin｜>{{ .Content }}<｜tool▁output▁end｜>
+  {{- end }}
+  {{- if $last }}<｜tool▁outputs▁end｜>{{ end }}
+{{- end }}
+{{- if and $last (ne .Role "assistant") (ne .Role "tool") }}<｜Assistant｜>
+{{- if and $.IsThinkSet (not $.Think) -}}
+<think>
+
+</think>
+
+{{ end }}
+{{- end -}}
+{{- end }}"""
+
+PARAMETER temperature 1.0
+PARAMETER stop <｜begin▁of▁sentence｜>
+PARAMETER stop <｜end▁of▁sentence｜>
+PARAMETER stop <｜User｜>
+PARAMETER stop <｜Assistant｜>
+PARAMETER stop <｜tool▁calls▁begin｜>
+PARAMETER stop <｜tool▁calls▁end｜>
+PARAMETER stop <｜tool▁outputs▁begin｜>
+PARAMETER stop <｜tool▁outputs▁end｜>

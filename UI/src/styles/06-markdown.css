@@ -1,0 +1,434 @@
+/**
+ * 06-markdown.css
+ *
+ * PURPOSE: Markdown rendering, syntax highlighting, code blocks
+ * DEPENDENCIES: 01-base.css, 05-chat.css (.message-content)
+ * AFFECTS: Tables, code blocks, lists, headings within .message-content
+ * LOAD ORDER: #6 - Styles content INSIDE messages
+ *
+ * KEY COMPONENTS:
+ * - Tables, lists, blockquotes in markdown
+ * - Code blocks with syntax highlighting (highlight.js)
+ * - Copy-to-clipboard button for code
+ * - Atom One Dark theme colors
+ *
+ * KNOWN ISSUES: None
+ *
+ * See: CSS-ARCHITECTURE.md for full documentation
+ */
+
+/* Markdown Styles */
+.message-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 13px;
+}
+
+.message-content table th,
+.message-content table td {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.message-content table th {
+    background-color: var(--bg-tertiary);
+    font-weight: 600;
+}
+
+.message-content table tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.message-content code {
+    background-color: #2a2a2a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    color: #e4e4e4;
+}
+
+/* Code block wrapper for copy button positioning */
+.code-block-wrapper {
+    position: relative;
+    margin: 10px 0;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.message-content pre {
+    background-color: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 12px;
+    padding-right: 48px;  /* Space for copy button */
+    overflow-x: visible;
+    margin: 0;
+}
+
+/* Copy code button */
+.copy-code-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #abb2bf;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.copy-code-btn:hover {
+    background-color: #3a3a3a;
+    border-color: #4a4a4a;
+    color: #ffffff;
+}
+
+.copy-code-btn:active {
+    background-color: #4a4a4a;
+    transform: scale(0.95);
+}
+
+.copy-code-btn.copied {
+    background-color: #2d5a2d;
+    border-color: #3d6a3d;
+    color: #98c379;
+}
+
+.copy-code-btn svg {
+    pointer-events: none;
+}
+
+.message-content pre code {
+    background-color: transparent;
+    padding: 0;
+    display: block;
+    line-height: 1.5;
+    font-size: var(--code-font-size);
+    white-space: pre;  /* Prevent line wrapping in code blocks */
+}
+
+/* Compact Mode */
+body.compact-mode .message-content {
+    padding: 8px 12px;
+}
+
+body.compact-mode .settings-group {
+    margin-bottom: 24px;
+}
+
+body.compact-mode .chat-container {
+    padding: 12px;
+}
+
+/* Typewriter Effect (Experimental) */
+@keyframes typewriter-glow {
+    0% {
+        color: #ff5500;
+        text-shadow: 0 0 5px rgba(255, 85, 0, 1),
+                     0 0 10px rgba(255, 100, 20, 1),
+                     0 0 20px rgba(255, 120, 40, 0.9),
+                     0 0 30px rgba(255, 140, 60, 0.8),
+                     0 0 40px rgba(230, 100, 30, 0.7),
+                     0 0 60px rgba(200, 80, 20, 0.5);
+        filter: brightness(1.8) saturate(2);
+    }
+    40% {
+        color: #ff9933;
+        text-shadow: 0 0 4px rgba(255, 153, 51, 0.9),
+                     0 0 10px rgba(255, 140, 40, 0.7),
+                     0 0 20px rgba(230, 120, 30, 0.5),
+                     0 0 30px rgba(200, 100, 20, 0.3);
+        filter: brightness(1.5) saturate(1.6);
+    }
+    100% {
+        color: inherit;
+        text-shadow: none;
+        filter: brightness(1) saturate(1);
+    }
+}
+
+.typewriter-char {
+    display: inline-block;
+    animation: typewriter-glow 1.5s ease-out forwards;
+}
+
+/* Syntax Highlighting (highlight.js compatible) */
+.message-content .hljs-comment,
+.message-content .hljs-quote {
+    color: #5c6370;
+    font-style: italic;
+}
+
+.message-content .hljs-keyword,
+.message-content .hljs-selector-tag,
+.message-content .hljs-type {
+    color: #c678dd;
+}
+
+.message-content .hljs-string,
+.message-content .hljs-attr {
+    color: #98c379;
+}
+
+.message-content .hljs-number,
+.message-content .hljs-literal,
+.message-content .hljs-variable,
+.message-content .hljs-template-variable {
+    color: #d19a66;
+}
+
+.message-content .hljs-function,
+.message-content .hljs-title,
+.message-content .hljs-title.function_,
+.message-content .function_ {
+    color: #61afef;
+}
+
+.message-content .hljs-params {
+    color: #abb2bf;
+}
+
+.message-content .hljs-built_in,
+.message-content .hljs-class .hljs-title {
+    color: #e6c07b;
+}
+
+.message-content .hljs-tag,
+.message-content .hljs-name,
+.message-content .hljs-attribute {
+    color: #e06c75;
+}
+
+.message-content .hljs-regexp,
+.message-content .hljs-link {
+    color: #56b6c2;
+}
+
+.message-content .hljs-symbol,
+.message-content .hljs-bullet {
+    color: #61aeee;
+}
+
+.message-content .hljs-meta,
+.message-content .hljs-meta .hljs-keyword {
+    color: #61afef;
+}
+
+.message-content .hljs-deletion {
+    color: #e06c75;
+}
+
+.message-content .hljs-addition {
+    color: #98c379;
+}
+
+.message-content .hljs-emphasis {
+    font-style: italic;
+}
+
+.message-content .hljs-strong {
+    font-weight: bold;
+}
+
+/* Global fallback for any missed hljs classes */
+.hljs-comment,
+.hljs-quote {
+    color: #5c6370;
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type {
+    color: #c678dd;
+}
+
+.hljs-string,
+.hljs-attr {
+    color: #98c379;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable {
+    color: #d19a66;
+}
+
+.hljs-function,
+.hljs-title,
+.hljs-title.function_,
+.function_ {
+    color: #61afef;
+}
+
+.hljs-params {
+    color: #abb2bf;
+}
+
+.hljs-built_in {
+    color: #e6c07b;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+    color: #e06c75;
+}
+
+.hljs-regexp,
+.hljs-link {
+    color: #56b6c2;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+    color: #61aeee;
+}
+
+.hljs-meta {
+    color: #61afef;
+}
+
+.hljs-deletion {
+    color: #e06c75;
+}
+
+.hljs-addition {
+    color: #98c379;
+}
+
+.message-content ul,
+.message-content ol {
+    margin: 10px 0;
+    padding-left: 24px;
+}
+
+.message-content li {
+    margin: 4px 0;
+}
+
+.message-content blockquote {
+    border-left: 3px solid var(--accent-color);
+    padding-left: 12px;
+    margin: 10px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.message-content h1,
+.message-content h2,
+.message-content h3 {
+    margin: 16px 0 8px 0;
+    color: var(--text-primary);
+}
+
+.message-content h1 {
+    font-size: 20px;
+}
+
+.message-content h2 {
+    font-size: 18px;
+}
+
+.message-content h3 {
+    font-size: 16px;
+}
+
+.message-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.message-content a:hover {
+    text-decoration: underline;
+}
+
+.message-content p {
+    margin: 8px 0;
+}
+
+/* Content Section Markdown Elements (for assistant messages) */
+.content-section table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 13px;
+}
+
+.content-section table th,
+.content-section table td {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.content-section table th {
+    background-color: var(--bg-tertiary);
+    font-weight: 600;
+}
+
+.content-section table tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.content-section ul,
+.content-section ol {
+    margin: 10px 0;
+    padding-left: 24px;
+}
+
+.content-section li {
+    margin: 4px 0;
+}
+
+.content-section blockquote {
+    border-left: 3px solid var(--accent-color);
+    padding-left: 12px;
+    margin: 10px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.content-section h1,
+.content-section h2,
+.content-section h3 {
+    margin: 16px 0 8px 0;
+    color: var(--text-primary);
+}
+
+.content-section h1 {
+    font-size: 20px;
+}
+
+.content-section h2 {
+    font-size: 18px;
+}
+
+.content-section h3 {
+    font-size: 16px;
+}
+
+.content-section a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.content-section a:hover {
+    text-decoration: underline;
+}
+
+.content-section p {
+    margin: 8px 0;
+}
+

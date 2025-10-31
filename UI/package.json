@@ -1,0 +1,40 @@
+{
+  "name": "ollmini-devbox",
+  "version": "0.2.0",
+  "description": "Ollmini Devbox - AI Development Environment",
+  "main": "src/main.js",
+  "bin": {
+    "ollmini-devbox": "bin/ollmini-devbox.js"
+  },
+  "scripts": {
+    "start": "electron src/main.js",
+    "dev": "electron src/main.js --dev",
+    "link": "npm link",
+    "unlink": "npm unlink -g"
+  },
+  "keywords": [
+    "ollama",
+    "chat",
+    "electron",
+    "desktop",
+    "devbox"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@lancedb/lancedb": "^0.22.1",
+    "chart.js": "^4.4.0",
+    "csv-writer": "^1.6.0",
+    "diff": "^5.1.0",
+    "electron": "^28.3.3",
+    "electron-window-state": "^5.0.3",
+    "fast-glob": "^3.3.2",
+    "highlight.js": "^11.9.0",
+    "markdown-it": "^14.1.0",
+    "marked": "^11.0.0",
+    "pdf-parse": "^1.1.1",
+    "tiktoken": "^1.0.22",
+    "xlsx": "^0.18.5"
+  },
+  "type": "commonjs"
+}

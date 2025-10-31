@@ -1,0 +1,59 @@
+/**
+ * 01-base.css
+ *
+ * PURPOSE: CSS resets, CSS variables (colors, fonts), base typography
+ * DEPENDENCIES: None (must load first)
+ * AFFECTS: All elements (universal reset), CSS variables used globally
+ * LOAD ORDER: #1 - Must load before all other CSS files
+ *
+ * KEY COMPONENTS:
+ * - Universal reset (*selector)
+ * - :root CSS variables (colors, fonts, shadows)
+ * - body base styles
+ * - Scrollbar styling
+ *
+ * KNOWN ISSUES: None
+ *
+ * See: CSS-ARCHITECTURE.md for full documentation
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --bg-input: #252525;
+    --text-primary: #e4e4e4;
+    --text-secondary: #a0a0a0;
+    --border-color: #404040;
+    --accent-color: #007acc;
+    --accent-hover: #005a9e;
+    --success-color: #4caf50;
+    --user-bubble: #4a5a6a;
+    --assistant-bubble: #2d2d2d;
+
+    /* Configurable via settings */
+    --message-font-size: 14px;
+    --code-font-size: 13px;
+    --chat-width: 85%;
+    --input-width: 75%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
